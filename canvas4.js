@@ -19,7 +19,7 @@ var h = rect.height * dpr;
 canvas.width = w;
 canvas.height = h;
 var ctx = canvas.getContext('2d');
-ctx.scale(dpr / 1.2, dpr / 1.2);
+ctx.scale(dpr / 1.5, dpr / 1.5);
 
 var arcs = [];
 
