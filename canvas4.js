@@ -20,6 +20,7 @@ canvas.width = w;
 canvas.height = h;
 var ctx = canvas.getContext('2d');
 ctx.scale(dpr / 1.5, dpr / 1.5);
+ctx.translate(150,0)
 
 var arcs = [];
 
