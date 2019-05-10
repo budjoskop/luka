@@ -1,238 +1,183 @@
-window.requestAnimFrame = (function() {
-  return window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.oRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||
-    function(callback) {
-      window.setTimeout(callback, 1000 / 60);
-    };
+var usr_color = 100; //Change value to change color scheme
+
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame || 
+    window.webkitRequestAnimationFrame || 
+    window.mozRequestAnimationFrame    || 
+    window.oRequestAnimationFrame      || 
+    window.msRequestAnimationFrame     ||  
+    function( callback ){
+    window.setTimeout(callback, 1000 / 60);
+  };
 })();
 
-var num = 8;
-var mLn = num * 20;
-var prevX = new Array(mLn);
-var prevY = new Array(mLn);
-var _xct = 0,
-  _yct = 0,
-  time = 0;
-var _x = new Array(num);
-var _y = new Array(num);
-var x, y;
+var canvas = document.getElementsByTagName("canvas")[0];
+var dpr = window.devicePixelRatio || 1;
+var rect = canvas.getBoundingClientRect();
+var w = rect.width * dpr;
+var h = rect.height * dpr;
+canvas.width = w;
+canvas.height = h;
+var ctx = canvas.getContext('2d');
+ctx.scale(dpr, dpr);
 
-var c = document.getElementById('canvas');
-var ctx = c.getContext("2d");
-var w = c.width = window.innerWidth;
-var h = c.height = window.innerHeight;
+var arcs = [];
 
-var draw = function() {
-  ctx.clearRect(-c.width / 2, -c.height / 2, c.width, c.height);
-  x.xd_();
-  y.yd_();
-
-  ctx.beginPath();
-  ctx.fillStyle = 'hsla(0,0%,5%,.5)';
-  ctx.arc((x.x += x.a), (y.y += y.b), 20, 0, 2 * Math.PI, true);
-  ctx.fill();
-  prevX[_xct] = x.x;
-  prevY[_yct] = y.y;
-  _xct++;
-  _yct++;
-  if (_xct == mLn) _xct = 0;
-  if (_yct == mLn) _yct = 0;
-
-  ctx.beginPath();
-  ctx.moveTo(x.x, y.y);
-  ctx.lineWidth = 15;
-  ctx.strokeStyle = 'hsla(0,0%,5%,1)';
-  ctx.lineTo(prevX[_x[1]], prevY[_y[1]]);
-  ctx.stroke();
-  for (var i = 0; i < num - 1; i++) {
-    ctx.beginPath();
-    ctx.moveTo(prevX[_x[i]], prevY[_y[i]]);
-    ctx.lineWidth = 5;
-    ctx.lineTo(prevX[_x[i + 1]], prevY[_y[i + 1]]);
-    ctx.stroke();
-  }
-  var a = [1 / 100];
-  var colors = ['hsla(310, 95%, 55%, 1)',
-    'hsla(232, 5%, 95%, 1)',
-    'hsla(282, 95%, 15%, 1)',
-    'hsla(214, 95%, 45%, 1)',
-    'hsla(116, 95%, 45%, 1)',
-    'hsla(52, 95%, 55%, 1)',
-    'hsla(18, 95%, 45%, 1)',
-    'hsla(0, 95%, 25%, 1)'
-  ];
-  for (var i = 0; i < num; i++) {
-    for (i in colors) {
-      _x[i]++;
-      _y[i]++;
-      if (_x[i] == mLn) _x[i] = 0;
-      if (_y[i] == mLn) _y[i] = 0;
-
-      //ring one (closests to inner circle)
-      //shadow mimic
-      ctx.lineWidth = 10;
-      ctx.beginPath();
-      ctx.arc(prevX[_x[i]] - 15, prevY[_y[i]] - 15, 31, 0, 2 * Math.PI, true);
-      ctx.fillStyle = 'hsla(0,0%,0%,0.8)';
-      ctx.fill();
-      //color
-      ctx.lineWidth = 10;
-      ctx.beginPath();
-      ctx.arc(prevX[_x[i]] - 15, prevY[_y[i]] - 15, 30, 0, 2 * Math.PI, true);
-      ctx.fillStyle = colors[i];
-      ctx.fill();
-
-      //inner circle
-      ctx.lineWidth = 10;
-      ctx.beginPath();
-      ctx.arc(prevX[_x[i]] - 15, prevY[_y[i]] - 15, 10, 0, 2 * Math.PI, true);
-      ctx.fillStyle = 'hsla(0,5%,5%,1)';
-      ctx.fill();
-
-      //outer ring
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = 'hsla(0,0%,5%,.8)';
-      ctx.lineWidth = 20;
-      ctx.beginPath();
-      ctx.arc(prevX[_x[i]] - 15, prevY[_y[i]] - 15, 88, 0, 2 * Math.PI, true);
-      ctx.stroke();
-
-      //second ring (closest to outer ring)
-      //shadow mimic
-      ctx.strokeStyle = 'hsla(0,0%,0%,0.8)';
-      ctx.lineWidth = 20;
-      ctx.beginPath();
-      ctx.arc(prevX[_x[i]] - 15, prevY[_y[i]] - 15, 57, 0, 2 * Math.PI, true);
-      ctx.stroke();
-      //color
-      ctx.strokeStyle = colors[i];
-      ctx.lineWidth = 20;
-      ctx.beginPath();
-      ctx.arc(prevX[_x[i]] - 15, prevY[_y[i]] - 15, 55, 0, 2 * Math.PI, true);
-      ctx.stroke();
-    }
-  }
-};
-var dry = function() {
-  this.b = 0;
-  this.bc;
-  this.exY;
-  this.pY;
-  this.y = c.height;
-};
-dry.prototype.yd_ = function() {
-  if (this.b >= 7) {
-    this.b = 7;
-  }
-  if (this.b <= -7) {
-    this.b = -7;
-  }
-  this.b += this.bc;
-  if (this.bc > 0) {
-    if (this.y >= this.pY) {
-      do {
-        this.pY = (Math.random() - 1) * 100;
-        this.exY = this.pY - this.y;
-      } while (Math.abs(this.exY) <= 7);
-      this.bc = this.exY / 150;
-    }
-  }
-  if (this.bc <= 0) {
-    if (this.y <= this.pY) {
-      do {
-        this.pY = (Math.random() - 1) * 100;
-        this.exY = this.pY - this.y;
-      } while (Math.abs(this.exY) <= 7);
-      this.bc = this.exY / 150;
-    }
-  }
-};
-var drx = function() {
-  this.a = 0;
-  this.ac;
-  this.exX;
-  this.pX;
-  this.x = c.width;
-};
-drx.prototype.xd_ = function() {
-  if (this.a >= 7) {
-    this.a = 7;
-  }
-  if (this.a <= -7) {
-    this.a = -7;
-  }
-  this.a += this.ac;
-  if (this.ac > 0) {
-    if (this.x >= this.pX) {
-      do {
-        this.pX = (Math.random() - 1) * 200;
-        this.exX = this.pX - this.x;
-      } while (Math.abs(this.exX) <= 20);
-      this.ac = this.exX / 300;
-
-    }
-  }
-  if (this.ac <= 0) {
-    if (this.x <= this.pX) {
-      do {
-        this.pX = (Math.random() - 1) * 100;
-        this.exX = this.pX - this.x;
-      } while (Math.abs(this.exX) <= 20);
-      this.ac = this.exX / 300;
-    }
-  }
-};
-var ready = function() {
-  ctx.translate(w / 2, h / 2);
-  for (var i = 0; i < mLn; i++) {
-    prevX[i] = w;
-    prevY[i] = h;
-  }
-  for (var i = 0; i < num; i++) {
-    _x[i] = mLn - i * 25;
-    _y[i] = mLn - i * 25;
-  }
-  x = new drx();
-  y = new dry();
-  x.pX = (Math.random() - 0.5) * 15;
-  y.pY = (Math.random() - 0.5) * 15;
-  x.exX = x.pX - x.x;
-  y.exY = y.pY - y.y;
-  x.ac = x.exX / 200;
-  y.bc = y.exY / 200;
-  run();
-};
-
-var run = function() {
-  window.requestAnimFrame(run);
-  draw();
+function init(){
+  console.log("init called");
+  reset();
+  arcs = [];
+  var m = new arc();
+  m.class = "month";
+  arcs.push(m);
+  
+  var d = new arc();
+  d.class = "date";
+  d.r = 135;
+  arcs.push(d);
+  
+  var d = new arc();
+  d.class = "day";
+  d.r = 170;
+  arcs.push(d);
+  
+  var h = new arc();
+  h.class = "hours";
+  h.r = 205;
+  arcs.push(h);
+  
+  var m = new arc();
+  m.class = "mins";
+  m.r = 240;
+  arcs.push(m);
+  
+  var s = new arc();
+  s.class = "secs";
+  s.r = 275;
+  arcs.push(s);
 }
-ready();
 
-/******
+function arc(){
+  this.class = "month";
+  this.r = 100;
+  this.rot = 1;
+  
+  this.draw = function(){
+    ctx.beginPath();
+    ctx.arc(300,300,this.r,(Math.PI/(2/3)),this.rot,false);
+    ctx.lineWidth = 30;
+    ctx.strokeStyle = "hsla("+(this.rot*(180/Math.PI)+usr_color)+",60%,50%,1)";
+    ctx.stroke();
+    
+    ctx.save();
+    //ctx.fillStyle = "rgba(0, 0, 48, 1)";
+    ctx.translate(300, 300);
+    ctx.rotate(this.rot);
+    ctx.font="bold 14px Arial";
+    if(this.class == "secs"){
+      var d = new Date();
+      ctx.fillText(d.getSeconds(), 267, -5);
+    }
+    else if(this.class == "mins"){
+      var d = new Date();
+      ctx.fillText(d.getMinutes(), 232, -5);
+    }
+    else if(this.class == "hours"){
+      var d = new Date();
+      ctx.fillText(d.getHours(), 197, -5);
+    }
+    else if(this.class == "day"){
+      var d = new Date();
+      var day = d.getDay();
+      if(day == 1){
+        var day = "Mon"
+      }
+      else if(day == 2){
+        var day = "Tue"
+      }
+      else if(day == 3){
+        var day = "Wed"
+      }
+      else if(day == 4){
+        var day = "Thu"
+      }
+      else if(day == 5){
+        var day = "Fri"
+      }
+      else if(day == 6){
+        var day = "Sat"
+      }
+      else if(day == 7){
+        var day = "Sun"
+      }
+      ctx.fillText(day, 158, -5);
+    }
+    else if(this.class == "date"){
+      var d = new Date();
+      ctx.fillText(d.getDate(), 127, -5);
+    }
+    else if(this.class == "month"){
+      var d = new Date();
+      ctx.fillText(d.getMonth()+1, 93, -5);
+    }
+    ctx.restore();
+  }
+}
 
-var key:
------------
-num: number of objects
-mln: max line length
-prevX: previous x position
-prevY: previous y position
-_xct: section length x pos
-_yct: section length y pos
-x, y : x && y positions
-_x, _y: x && y object arrays
+function reset(){
+  ctx.fillStyle = "rgba(0, 0, 48, 1)";
+  ctx.fillRect(0,0,w,h);
+}
 
-function key:
-------------
-function draw = draw scene
-function xd_ = draw x pos
-funtion yd_ = draw y pos
-function drx = draw x object
-function dry = draw y object
-function ready = canvas setup
-function run = animation loop
+function draw(){
+  reset();
+  ctx.fillStyle = "rgba(255,255,255,0.8)";
+  ctx.font = "12px Arial"
+  ctx.fillText("seconds", 250, 27);
+  ctx.fillText("minutes", 252, 63);
+  ctx.fillText("hours", 264, 98);
+  ctx.fillText("day", 274, 134);
+  ctx.fillText("date", 270, 168);
+  ctx.fillText("month", 260, 203);
+  
+  for(var i=0;i<arcs.length;i++){
+    var a = arcs[i];
+    var d = new Date();
+    if(a.class == "month"){
+      var n = d.getMonth()+1;
+      a.rot = (n/12)*(Math.PI*2) - (Math.PI/2);
+    }
+    else if(a.class == "date"){
+      var n = d.getDate();
+      a.rot = (n/31)*(Math.PI*2) - (Math.PI/2);
+    }
+    else if(a.class == "day"){
+      var n = d.getDay();
+      a.rot = (n/7)*(Math.PI*2) - (Math.PI/2);
+    }
+    else if(a.class == "hours"){
+      var n = d.getHours();
+      var m = d.getMinutes();
+      a.rot = ((n/12)*(Math.PI*2) - (Math.PI/2)) + ((m/3600)*(Math.PI*2));
+    }
+    else if(a.class == "mins"){
+      var n = d.getMinutes();
+      var s = d.getSeconds();
+      a.rot = ((n/60)*(Math.PI*2) - (Math.PI/2)) + ((s/3600)*(Math.PI*2));
+    }
+    else if(a.class == "secs"){
+      var n = d.getSeconds();
+      var m = d.getMilliseconds();
+      a.rot = ((n/60)*(Math.PI*2) - (Math.PI/2)) + ((m/60000)*(Math.PI*2));
+    }
+    a.draw();
+  }
+}
 
-*******/
+function animloop() {
+  draw();
+  requestAnimFrame(animloop); 
+}
+
+init();
+animloop();
