@@ -1,4 +1,4 @@
-var usr_color = 100; //Change value to change color scheme
+var usr_color = 160; //Change value to change color scheme
 
 window.requestAnimFrame = (function(){
   return  window.requestAnimationFrame || 
@@ -19,7 +19,7 @@ var h = rect.height * dpr;
 canvas.width = w;
 canvas.height = h;
 var ctx = canvas.getContext('2d');
-ctx.scale(dpr / 1.3, dpr / 1.3);
+ctx.scale(dpr / 1.2, dpr / 1.2);
 
 var arcs = [];
 
@@ -70,7 +70,7 @@ function arc(){
     ctx.stroke();
     
     ctx.save();
-    ctx.fillStyle = "rgba(0, 0, 48, 1)";
+    ctx.fillStyle = "rgba(255, 255, 255, 1)";
     ctx.translate(300, 300);
     ctx.rotate(this.rot);
     ctx.font="bold 14px Arial";
@@ -126,12 +126,12 @@ function arc(){
 
 function reset(){
   ctx.fillStyle = "rgba(0, 0, 48, 1)";
-  ctx.fillRect(0,0,w,h);
+  ctx.fillRect(0,0,0,0);
 }
 
 function draw(){
   reset();
-  ctx.fillStyle = "rgba(255,255,255,0.8)";
+  ctx.fillStyle = "rgba(0,0,0,0.8)";
   ctx.font = "12px Arial"
   ctx.fillText("seconds", 250, 27);
   ctx.fillText("minutes", 252, 63);
