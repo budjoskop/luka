@@ -19,7 +19,7 @@ var h = rect.height * dpr;
 canvas.width = w;
 canvas.height = h;
 var ctx = canvas.getContext('2d');
-ctx.scale(dpr, dpr);
+ctx.scale(dpr / 1.3, dpr / 1.3);
 
 var arcs = [];
 
@@ -70,7 +70,7 @@ function arc(){
     ctx.stroke();
     
     ctx.save();
-    //ctx.fillStyle = "rgba(0, 0, 48, 1)";
+    ctx.fillStyle = "rgba(0, 0, 48, 1)";
     ctx.translate(300, 300);
     ctx.rotate(this.rot);
     ctx.font="bold 14px Arial";
