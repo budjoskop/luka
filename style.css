@@ -250,3 +250,10 @@ label {
 .balloon:nth-child(5):before {
   color: hsl(23, 44%, 46%);
 }
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
